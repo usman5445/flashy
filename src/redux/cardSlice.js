@@ -1,15 +1,22 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { configureStore, createSlice, nanoid } from "@reduxjs/toolkit";
 
 // slice
 const cardSlice = createSlice({
-  name: "counter_slice",
+  name: "cards",
   initialState: JSON.parse(localStorage.getItem("cards")) || [],
   reducers: {
-    addCard: (state, payload) => {
-      state.push(payload);
+    addCard: (state, action) => {
+      const newCard = {
+        id: nanoid(),
+        ...action.payload,
+        createdAt: new Date().toISOString(),
+      };
+      state.push(newCard);
     },
   },
 });
+
+export const { addCard } = cardSlice.actions;
 
 // store
 export const store = configureStore({
