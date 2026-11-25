@@ -17,10 +17,11 @@ const cardSlice = createSlice({
 });
 
 export const { addCard } = cardSlice.actions;
+export const cardReducer = cardSlice.reducer;
 
 // store
 export const store = configureStore({
-  reducer: cardSlice.reducer,
+  reducer: cardReducer,
 });
 
 // store subscriber to update localstorage on each updation of state

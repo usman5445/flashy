@@ -1,16 +1,17 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { useDispatch } from "react-redux";
 import { addCard } from "../redux/cardSlice";
 import { useNavigate, NavLink } from "react-router-dom";
 import { HiOutlineUpload } from "react-icons/hi";
 import { AiOutlinePlus } from "react-icons/ai";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiEditLine } from "react-icons/ri";
 
 function CreateCard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const groupImageRef = useRef(null);
+  const termInputRefs = useRef([]);
 
   const initialValues = {
     groupName: "",
@@ -35,8 +36,16 @@ function CreateCard() {
     return errors;
   };
 
-  const handleImageUpload = (e, setFieldValue, fieldName) => {
-    const file = e.target.files[0];
+  // Focus the term title input so the user can edit it right away
+  const handleEditTerm = (index) => {
+    const input = termInputRefs.current[index];
+    if (!input) return;
+    input.focus();
+    input.select();
+    input.scrollIntoView?.({ behavior: "smooth", block: "center" });
+  };
+
+  const handleImageUpload = (e, setFieldValue, fieldName) => {    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -185,6 +194,7 @@ function CreateCard() {
                             <Field
                               name={`terms.${index}.term`}
                               type="text"
+                              innerRef={(el) => (termInputRefs.current[index] = el)}
                               placeholder=""
                               className="w-full border-b border-gray-300 px-1 py-2 text-sm focus:outline-none focus:border-blue-500"
                             />
@@ -261,11 +271,24 @@ function CreateCard() {
                             </>
                           )}
 
+                          {/* Edit term button */}
+                          <button
+                            type="button"
+                            onClick={() => handleEditTerm(index)}
+                            aria-label={`Edit term ${index + 1}`}
+                            title="Edit term"
+                            className="text-gray-400 hover:text-blue-600 transition-colors p-1 cursor-pointer"
+                          >
+                            <RiEditLine className="text-lg" />
+                          </button>
+
                           {/* Delete term button (only if more than one term) */}
                           {values.terms.length > 1 && (
                             <button
                               type="button"
                               onClick={() => remove(index)}
+                              aria-label={`Delete term ${index + 1}`}
+                              title="Delete term"
                               className="text-gray-400 hover:text-red-500 transition-colors p-1 cursor-pointer"
                             >
                               <RiDeleteBin6Line className="text-lg" />
